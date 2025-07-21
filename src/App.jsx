@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { TrendingUp, TrendingDown, Plus, Minus, ArrowUpDown, Home, Briefcase, BarChart3, RefreshCw, Newspaper } from 'lucide-react';
+import Login from './login';
 
 const CryptoTracker = () => {
   const [activeTab, setActiveTab] = useState('home');
@@ -14,7 +15,11 @@ const CryptoTracker = () => {
   const [convertTo, setConvertTo] = useState('ethereum');
   const [convertAmount, setConvertAmount] = useState(1);
   const [conversionResult, setConversionResult] = useState(0);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
+  const handleLogin = () => {
+    setIsLoggedIn(true);
+  };
   // Fetch cryptocurrency data
   const fetchCryptoData = async () => {
     try {
@@ -403,7 +408,10 @@ const CryptoTracker = () => {
       </div>
     </div>
   );
-
+  if (!isLoggedIn) {
+    return <Login onLogin={handleLogin} />;
+  }
+  
   return (
     <div className="min-h-screen bg-gray-100 w-full">
       <Navigation />
