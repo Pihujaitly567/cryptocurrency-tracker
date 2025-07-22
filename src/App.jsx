@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { TrendingUp, TrendingDown, Plus, Minus, ArrowUpDown, Home, Briefcase, BarChart3, RefreshCw, Newspaper } from 'lucide-react';
 import Login from './login';
+import Footer from './Footer';
 
 const CryptoTracker = () => {
   const [activeTab, setActiveTab] = useState('home');
@@ -422,6 +423,9 @@ const CryptoTracker = () => {
         {activeTab === 'convert' && <ConvertPage />}
         {activeTab === 'news' && <NewsPage />}
       </div>
+    <div>
+    <Footer />
+  </div>
     </div>
   );
 };
