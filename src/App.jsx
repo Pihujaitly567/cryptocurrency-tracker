@@ -20,7 +20,7 @@ const CryptoTracker = () => {
   const handleLogin = () => {
     setIsLoggedIn(true);
   };
-  // Fetch cryptocurrency data
+
   const fetchCryptoData = async () => {
     try {
       setLoading(true);
@@ -36,7 +36,7 @@ const CryptoTracker = () => {
     }
   };
 
-  // Fetch historical chart data
+
   const fetchChartData = async (coinId) => {
     try {
       const response = await fetch(
@@ -53,7 +53,7 @@ const CryptoTracker = () => {
     }
   };
 
-  // Fetch crypto news (mock data since CoinGecko doesn't provide news)
+
   const fetchNews = () => {
     const mockNews = [
       {
@@ -78,7 +78,7 @@ const CryptoTracker = () => {
     setNews(mockNews);
   };
 
-  // Add to portfolio
+
   const addToPortfolio = (crypto, amount) => {
     const existingItem = portfolio.find(item => item.id === crypto.id);
     if (existingItem) {
@@ -96,12 +96,12 @@ const CryptoTracker = () => {
     }
   };
 
-  // Remove from portfolio
+
   const removeFromPortfolio = (cryptoId) => {
     setPortfolio(portfolio.filter(item => item.id !== cryptoId));
   };
 
-  // Calculate conversion
+
   const calculateConversion = () => {
     const fromCrypto = cryptoData.find(crypto => crypto.id === convertFrom);
     const toCrypto = cryptoData.find(crypto => crypto.id === convertTo);
@@ -127,7 +127,7 @@ const CryptoTracker = () => {
     calculateConversion();
   }, [convertFrom, convertTo, convertAmount, cryptoData]);
 
-  // Format currency
+
   const formatCurrency = (amount) => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
@@ -135,22 +135,22 @@ const CryptoTracker = () => {
     }).format(amount);
   };
 
-  // Format percentage
+
   const formatPercentage = (percentage) => {
     return `${percentage >= 0 ? '+' : ''}${percentage.toFixed(2)}%`;
   };
 
-  // Calculate portfolio total value
+
   const portfolioValue = portfolio.reduce((total, item) => {
     return total + (item.current_price * item.amount);
   }, 0);
 
-  // Calculate portfolio profit/loss
+
   const portfolioProfitLoss = portfolio.reduce((total, item) => {
     return total + ((item.current_price - item.purchasePrice) * item.amount);
   }, 0);
 
-  // Navigation component
+
   const Navigation = () => (
     <nav className="bg-gray-900 text-white p-4 sticky top-0 z-10 w-full">
       <div className="max-w-7xl mx-auto">
@@ -188,7 +188,7 @@ const CryptoTracker = () => {
     </nav>
   );
 
-  // Home page component
+
   const HomePage = () => (
     <div className="w-full max-w-7xl mx-auto px-4 py-6">
       <h2 className="text-2xl sm:text-3xl font-bold mb-6">Cryptocurrency Market</h2>
@@ -233,7 +233,7 @@ const CryptoTracker = () => {
     </div>
   );
 
-  // Portfolio page component
+
   const PortfolioPage = () => (
     <div className="w-full max-w-7xl mx-auto px-4 py-6">
       <h2 className="text-2xl sm:text-3xl font-bold mb-6">My Portfolio</h2>
@@ -298,7 +298,7 @@ const CryptoTracker = () => {
     </div>
   );
 
-  // Charts page component
+
   const ChartsPage = () => (
     <div className="w-full max-w-7xl mx-auto px-4 py-6">
       <h2 className="text-2xl sm:text-3xl font-bold mb-6">Price Charts</h2>
@@ -332,7 +332,7 @@ const CryptoTracker = () => {
     </div>
   );
 
-  // Convert page component
+
   const ConvertPage = () => (
     <div className="w-full max-w-7xl mx-auto px-4 py-6">
       <h2 className="text-2xl sm:text-3xl font-bold mb-6">Cryptocurrency Converter</h2>
@@ -393,7 +393,7 @@ const CryptoTracker = () => {
     </div>
   );
 
-  // News page component
+
   const NewsPage = () => (
     <div className="w-full max-w-7xl mx-auto px-4 py-6">
       <h2 className="text-2xl sm:text-3xl font-bold mb-6">Cryptocurrency News</h2>
