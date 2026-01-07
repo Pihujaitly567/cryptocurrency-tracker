@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
-import { TrendingUp, TrendingDown, Plus, Minus, ArrowUpDown, Home, Briefcase, BarChart3, RefreshCw, Newspaper, Star } from 'lucide-react';
+import { TrendingUp, TrendingDown, Plus, Minus, ArrowUpDown, Home, Briefcase, BarChart3, RefreshCw, Newspaper, Star, Globe, Github } from 'lucide-react';
 import Login from './login';
 import Footer from './Footer';
 
@@ -16,8 +16,9 @@ const CryptoTracker = () => {
   const [convertFrom, setConvertFrom] = useState('bitcoin');
   const [convertTo, setConvertTo] = useState('ethereum');
   const [convertAmount, setConvertAmount] = useState(1);
-  const [conversionResult, setConversionResult] = useState(0);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [conversionResult, setConversionResult] = useState(0);
+  const [currency, setCurrency] = useState('usd');
   const [favorites, setFavorites] = useState(() => {
     const saved = localStorage.getItem('favorites');
     return saved ? JSON.parse(saved) : [];
@@ -41,7 +42,7 @@ const CryptoTracker = () => {
     try {
       setLoading(true);
       const response = await fetch(
-        'https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=50&page=1&sparkline=false&price_change_percentage=24h'
+        `https://api.coingecko.com/api/v3/coins/markets?vs_currency=${currency}&order=market_cap_desc&per_page=50&page=1&sparkline=false&price_change_percentage=24h`
       );
       const data = await response.json();
       setCryptoData(data);
@@ -56,7 +57,7 @@ const CryptoTracker = () => {
   const fetchChartData = async (coinId) => {
     try {
       const response = await fetch(
-        `https://api.coingecko.com/api/v3/coins/${coinId}/market_chart?vs_currency=usd&days=7`
+        `https://api.coingecko.com/api/v3/coins/${coinId}/market_chart?vs_currency=${currency}&days=7`
       );
       const data = await response.json();
       const formattedData = data.prices.map(([timestamp, price]) => ({
@@ -241,7 +242,7 @@ const CryptoTracker = () => {
 
   useEffect(() => {
     fetchCryptoData();
-  }, []);
+  }, [currency]);
 
   // Auto-generate news when crypto data is loaded
   useEffect(() => {
@@ -263,9 +264,9 @@ const CryptoTracker = () => {
 
 
   const formatCurrency = (amount) => {
-    return new Intl.NumberFormat('en-US', {
+    return new Intl.NumberFormat(currency === 'usd' ? 'en-US' : 'en-IN', {
       style: 'currency',
-      currency: 'USD'
+      currency: currency.toUpperCase()
     }).format(amount);
   };
 
@@ -320,6 +321,15 @@ const CryptoTracker = () => {
             </div>
           </div>
           <div className="flex items-center gap-6">
+            <button
+              onClick={() => setCurrency(prev => prev === 'usd' ? 'inr' : 'usd')}
+              className="flex items-center gap-2 bg-slate-800/80 hover:bg-slate-700 text-white px-4 py-2 rounded-full border border-slate-700 transition-all"
+              title="Toggle Currency"
+            >
+              <span className={`font-bold ${currency === 'usd' ? 'text-blue-400' : 'text-gray-500'}`}>$</span>
+              <span className="text-gray-600">/</span>
+              <span className={`font-bold ${currency === 'inr' ? 'text-blue-400' : 'text-gray-500'}`}>₹</span>
+            </button>
             <div className="flex items-center gap-2 text-sm text-gray-400 bg-slate-800/50 px-4 py-2 rounded-full border border-slate-700/50">
               <span className="live-indicator"></span>
               <span className="hidden sm:inline">Live Updates</span>
@@ -333,28 +343,28 @@ const CryptoTracker = () => {
             </button>
           </div>
         </div>
-        <div className="flex flex-wrap gap-4 sm:gap-6 overflow-x-auto pb-4 scrollbar-hide">
-          {[
-            { id: 'home', label: 'Home', icon: Home },
-            { id: 'favorites', label: 'Favorites', icon: Star },
-            { id: 'portfolio', label: 'Portfolio', icon: Briefcase },
-            { id: 'charts', label: 'Charts', icon: BarChart3 },
-            { id: 'convert', label: 'Convert', icon: ArrowUpDown },
-            { id: 'news', label: 'News', icon: Newspaper }
-          ].map(({ id, label, icon: Icon }) => (
-            <button
-              key={id}
-              onClick={() => setActiveTab(id)}
-              className={`tab-btn flex items-center gap-3 px-8 py-4 rounded-2xl text-lg font-bold transition-all whitespace-nowrap shadow-lg flex-1 sm:flex-none justify-center ${activeTab === id
-                ? 'active text-white scale-105 shadow-blue-500/20'
-                : 'bg-slate-800/40 hover:bg-slate-700/60 text-gray-400 hover:text-white border border-slate-700/30 hover:border-slate-600'
-                }`}
-            >
-              <Icon size={24} />
-              <span className="">{label}</span>
-            </button>
-          ))}
-        </div>
+      </div>
+      <div className="flex flex-wrap gap-4 sm:gap-6 overflow-x-auto pb-4 scrollbar-hide">
+        {[
+          { id: 'home', label: 'Home', icon: Home },
+          { id: 'favorites', label: 'Favorites', icon: Star },
+          { id: 'portfolio', label: 'Portfolio', icon: Briefcase },
+          { id: 'charts', label: 'Charts', icon: BarChart3 },
+          { id: 'convert', label: 'Convert', icon: ArrowUpDown },
+          { id: 'news', label: 'News', icon: Newspaper }
+        ].map(({ id, label, icon: Icon }) => (
+          <button
+            key={id}
+            onClick={() => setActiveTab(id)}
+            className={`tab-btn flex items-center gap-3 px-8 py-4 rounded-2xl text-lg font-bold transition-all whitespace-nowrap shadow-lg flex-1 sm:flex-none justify-center ${activeTab === id
+              ? 'active text-white scale-105 shadow-blue-500/20'
+              : 'bg-slate-800/40 hover:bg-slate-700/60 text-gray-400 hover:text-white border border-slate-700/30 hover:border-slate-600'
+              }`}
+          >
+            <Icon size={24} />
+            <span className="">{label}</span>
+          </button>
+        ))}
       </div>
     </nav>
   );
