@@ -1,8 +1,20 @@
 import React, { useState, useEffect } from 'react';
+import { ThemeProvider, useTheme } from './ThemeContext';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
-import { TrendingUp, TrendingDown, Plus, Minus, ArrowUpDown, Home, Briefcase, BarChart3, RefreshCw, Newspaper, Star, Globe, Github } from 'lucide-react';
+import { TrendingUp, TrendingDown, Plus, Minus, ArrowUpDown, Home, Briefcase, BarChart3, RefreshCw, Newspaper, Star, Globe, Github, Bell, Sun, Moon, Activity } from 'lucide-react';
+
 import Login from './login';
+import ForgotPassword from './ForgotPassword';
+import ResetPassword from './ResetPassword';
+import AlertsPage from './AlertsPage';
+import StatsPage from './StatsPage';
+import SentimentMeter from './SentimentMeter';
+
 import Footer from './Footer';
+
+
+
+import { cryptoAPI, portfolioAPI, favoritesAPI } from './api/client';
 
 const CryptoTracker = () => {
   const [activeTab, setActiveTab] = useState('home');
@@ -16,36 +28,98 @@ const CryptoTracker = () => {
   const [convertFrom, setConvertFrom] = useState('bitcoin');
   const [convertTo, setConvertTo] = useState('ethereum');
   const [convertAmount, setConvertAmount] = useState(1);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(() => {
+    return !!localStorage.getItem('token');
+  });
+  const [user, setUser] = useState(() => {
+    const saved = localStorage.getItem('user');
+    return saved ? JSON.parse(saved) : null;
+  });
   const [conversionResult, setConversionResult] = useState(0);
   const [currency, setCurrency] = useState('usd');
-  const [favorites, setFavorites] = useState(() => {
-    const saved = localStorage.getItem('favorites');
-    return saved ? JSON.parse(saved) : [];
-  });
+  const [favorites, setFavorites] = useState([]);
+  const [authView, setAuthView] = useState('login');
 
-  useEffect(() => {
-    localStorage.setItem('favorites', JSON.stringify(favorites));
-  }, [favorites]);
 
-  const toggleFavorite = (id) => {
-    setFavorites(prev =>
-      prev.includes(id) ? prev.filter(fav => fav !== id) : [...prev, id]
-    );
+  // Load favorites from backend when user logs in
+  const loadFavorites = async () => {
+    try {
+      const favoriteIds = await favoritesAPI.getAll();
+      setFavorites(favoriteIds);
+    } catch (error) {
+      console.error('Error loading favorites:', error);
+    }
   };
 
-  const handleLogin = () => {
+  // Load portfolio from backend
+  const loadPortfolio = async () => {
+    try {
+      const portfolioData = await portfolioAPI.getAll();
+      // Transform backend data to match frontend structure
+      const transformedData = portfolioData.map(item => ({
+        id: item.cryptoId,
+        _id: item._id,
+        name: item.name,
+        symbol: item.symbol,
+        image: item.image,
+        amount: item.amount,
+        purchasePrice: item.purchasePrice,
+        current_price: item.currentPrice || item.purchasePrice,
+      }));
+      setPortfolio(transformedData);
+    } catch (error) {
+      console.error('Error loading portfolio:', error);
+    }
+  };
+
+  const toggleFavorite = async (id) => {
+    try {
+      if (favorites.includes(id)) {
+        await favoritesAPI.remove(id);
+        setFavorites(prev => prev.filter(fav => fav !== id));
+      } else {
+        await favoritesAPI.add(id);
+        setFavorites(prev => [...prev, id]);
+      }
+    } catch (error) {
+      console.error('Error toggling favorite:', error);
+    }
+  };
+
+  const handleLogin = (userData) => {
     setIsLoggedIn(true);
+    setUser(userData);
+    // Load user data after login
+    loadFavorites();
+    loadPortfolio();
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    setIsLoggedIn(false);
+    setUser(null);
+    setPortfolio([]);
+    setFavorites([]);
   };
 
   const fetchCryptoData = async () => {
     try {
       setLoading(true);
-      const response = await fetch(
-        `https://api.coingecko.com/api/v3/coins/markets?vs_currency=${currency}&order=market_cap_desc&per_page=50&page=1&sparkline=false&price_change_percentage=24h`
-      );
-      const data = await response.json();
+      const data = await cryptoAPI.getMarkets(currency, 50);
       setCryptoData(data);
+
+      // Update current prices in portfolio
+      if (portfolio.length > 0) {
+        const updatedPortfolio = portfolio.map(item => {
+          const cryptoInfo = data.find(c => c.id === item.id);
+          if (cryptoInfo) {
+            return { ...item, current_price: cryptoInfo.current_price };
+          }
+          return item;
+        });
+        setPortfolio(updatedPortfolio);
+      }
     } catch (error) {
       console.error('Error fetching crypto data:', error);
     } finally {
@@ -56,10 +130,7 @@ const CryptoTracker = () => {
 
   const fetchChartData = async (coinId) => {
     try {
-      const response = await fetch(
-        `https://api.coingecko.com/api/v3/coins/${coinId}/market_chart?vs_currency=${currency}&days=7`
-      );
-      const data = await response.json();
+      const data = await cryptoAPI.getChartData(coinId, currency, 7);
       const formattedData = data.prices.map(([timestamp, price]) => ({
         date: new Date(timestamp).toLocaleDateString(),
         price: price.toFixed(2)
@@ -207,26 +278,57 @@ const CryptoTracker = () => {
   };
 
 
-  const addToPortfolio = (crypto, amount) => {
-    const existingItem = portfolio.find(item => item.id === crypto.id);
-    if (existingItem) {
-      setPortfolio(portfolio.map(item =>
-        item.id === crypto.id
-          ? { ...item, amount: item.amount + amount }
-          : item
-      ));
-    } else {
-      setPortfolio([...portfolio, {
-        ...crypto,
+  const addToPortfolio = async (crypto, amount) => {
+    try {
+      // Add to backend
+      await portfolioAPI.add({
+        cryptoId: crypto.id,
+        name: crypto.name,
+        symbol: crypto.symbol,
+        image: crypto.image,
         amount,
-        purchasePrice: crypto.current_price
-      }]);
+        purchasePrice: crypto.current_price,
+        currentPrice: crypto.current_price,
+      });
+
+      // Update local state
+      const existingItem = portfolio.find(item => item.id === crypto.id);
+      if (existingItem) {
+        setPortfolio(portfolio.map(item =>
+          item.id === crypto.id
+            ? { ...item, amount: item.amount + amount }
+            : item
+        ));
+      } else {
+        setPortfolio([...portfolio, {
+          ...crypto,
+          id: crypto.id,
+          amount,
+          purchasePrice: crypto.current_price,
+          current_price: crypto.current_price,
+        }]);
+      }
+    } catch (error) {
+      console.error('Error adding to portfolio:', error);
+      alert('Failed to add to portfolio. Please try again.');
     }
   };
 
 
-  const removeFromPortfolio = (cryptoId) => {
-    setPortfolio(portfolio.filter(item => item.id !== cryptoId));
+  const removeFromPortfolio = async (cryptoId) => {
+    try {
+      // Find the item in portfolio
+      const item = portfolio.find(p => p.id === cryptoId);
+      if (item && item._id) {
+        // Remove from backend
+        await portfolioAPI.remove(item._id);
+      }
+      // Update local state
+      setPortfolio(portfolio.filter(item => item.id !== cryptoId));
+    } catch (error) {
+      console.error('Error removing from portfolio:', error);
+      alert('Failed to remove from portfolio. Please try again.');
+    }
   };
 
 
@@ -239,6 +341,14 @@ const CryptoTracker = () => {
       setConversionResult(result);
     }
   };
+
+  // Load user data on mount if logged in
+  useEffect(() => {
+    if (isLoggedIn) {
+      loadFavorites();
+      loadPortfolio();
+    }
+  }, [isLoggedIn]);
 
   useEffect(() => {
     fetchCryptoData();
@@ -302,6 +412,23 @@ const CryptoTracker = () => {
     </div>
   );
 
+  /* 
+     Move ThemeToggle definition up here so Navigation can use it.
+     Fixes: ReferenceError: Cannot access 'ThemeToggle' before initialization
+  */
+  const ThemeToggle = () => {
+    const { theme, toggleTheme } = useTheme();
+    return (
+      <button
+        onClick={toggleTheme}
+        className="p-3 rounded-full bg-slate-800/80 hover:bg-slate-700 text-yellow-400 transition-all border border-slate-700 hover:scale-110"
+        title={theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+      >
+        {theme === 'dark' ? <Sun size={20} /> : <Moon size={20} />}
+      </button>
+    );
+  };
+
   // yha se ui start
   const Navigation = () => (
     <nav className="nav-glass text-white shadow-xl p-6 md:p-8 sticky top-0 z-20 w-full mb-10">
@@ -321,6 +448,12 @@ const CryptoTracker = () => {
             </div>
           </div>
           <div className="flex items-center gap-6">
+            {user && (
+              <div className="hidden sm:flex items-center gap-2 bg-slate-800/50 px-4 py-2 rounded-full border border-slate-700/50">
+                <span className="text-gray-400 text-sm">Welcome,</span>
+                <span className="text-white font-semibold">{user.name}</span>
+              </div>
+            )}
             <button
               onClick={() => setCurrency(prev => prev === 'usd' ? 'inr' : 'usd')}
               className="flex items-center gap-2 bg-slate-800/80 hover:bg-slate-700 text-white px-4 py-2 rounded-full border border-slate-700 transition-all"
@@ -330,6 +463,8 @@ const CryptoTracker = () => {
               <span className="text-gray-600">/</span>
               <span className={`font-bold ${currency === 'inr' ? 'text-blue-400' : 'text-gray-500'}`}>₹</span>
             </button>
+            <ThemeToggle />
+
             <div className="flex items-center gap-2 text-sm text-gray-400 bg-slate-800/50 px-4 py-2 rounded-full border border-slate-700/50">
               <span className="live-indicator"></span>
               <span className="hidden sm:inline">Live Updates</span>
@@ -341,15 +476,27 @@ const CryptoTracker = () => {
               <RefreshCw size={20} className={loading ? 'animate-spin' : ''} />
               <span className="hidden sm:inline">Refresh</span>
             </button>
+            <button
+              onClick={handleLogout}
+              className="bg-red-500/10 hover:bg-red-500/20 text-red-400 px-6 py-3 rounded-full border border-red-500/20 hover:border-red-500/40 transition-all font-semibold"
+              title="Logout"
+            >
+              <span className="hidden sm:inline">Logout</span>
+              <span className="sm:hidden">🚪</span>
+            </button>
           </div>
         </div>
       </div>
+
       <div className="flex flex-wrap gap-4 sm:gap-6 overflow-x-auto pb-4 scrollbar-hide">
         {[
           { id: 'home', label: 'Home', icon: Home },
           { id: 'favorites', label: 'Favorites', icon: Star },
           { id: 'portfolio', label: 'Portfolio', icon: Briefcase },
+          { id: 'alerts', label: 'Alerts', icon: Bell },
+          { id: 'stats', label: 'Stats', icon: Activity },
           { id: 'charts', label: 'Charts', icon: BarChart3 },
+
           { id: 'convert', label: 'Convert', icon: ArrowUpDown },
           { id: 'news', label: 'News', icon: Newspaper }
         ].map(({ id, label, icon: Icon }) => (
@@ -366,7 +513,7 @@ const CryptoTracker = () => {
           </button>
         ))}
       </div>
-    </nav>
+    </nav >
   );
 
   const FavoritesPage = () => {
@@ -449,6 +596,7 @@ const CryptoTracker = () => {
           <span>{cryptoData.length} coins loaded</span>
         </div>
       </div>
+
       {loading ? (
         <div className="grid gap-6">
           {[...Array(6)].map((_, i) => (
@@ -528,6 +676,7 @@ const CryptoTracker = () => {
       )}
     </div>
   );
+
 
   // second page 
   const PortfolioPage = () => (
@@ -678,7 +827,7 @@ const CryptoTracker = () => {
 
   const ConvertPage = () => (
     <div className="w-full px-4 sm:px-8 py-4">
-      <div className="glass-card p-8 sm:p-12 max-w-3xl mx-auto relative overflow-hidden mt-8">
+      <div className="glass-card p-8 sm:p-12 max-w-3xl mx-auto relative overflow-hidden mt-20">
         {/* Decorative background glow */}
         <div className="absolute top-0 right-0 -mr-20 -mt-20 w-64 h-64 bg-blue-500/10 rounded-full blur-3xl pointer-events-none"></div>
         <div className="absolute bottom-0 left-0 -ml-20 -mb-20 w-64 h-64 bg-purple-500/10 rounded-full blur-3xl pointer-events-none"></div>
@@ -815,19 +964,46 @@ const CryptoTracker = () => {
       )}
     </div>
   );
+  // Check for reset password URL
+  // We check this before login check so it can override it if needed
+  const isResetPassword = typeof window !== 'undefined' && window.location.pathname.startsWith('/reset-password/');
+
+  if (isResetPassword) {
+    return <ResetPassword onLogin={() => {
+      // Clear URL and go to login
+      window.history.pushState({}, '', '/');
+      setAuthView('login');
+      // Force re-render if needed, but the URL change usually needs a reload or custom router
+      // Since we are SPA without router, we rely on component mounting
+      // ResetPassword component calls onLogin which we handle here
+      window.location.href = '/';
+    }} />;
+  }
+
+
+
   if (!isLoggedIn) {
-    return <Login onLogin={handleLogin} />;
+    if (authView === 'forgot') {
+      return <ForgotPassword onBack={() => setAuthView('login')} />;
+    }
+    return <Login
+      onLogin={handleLogin}
+      onForgotPassword={() => setAuthView('forgot')}
+    />;
   }
 
   return (
-    <div className="min-h-screen gradient-bg w-full relative">
+    <div className="min-h-screen gradient-bg w-full relative transition-colors duration-300">
       <div className="relative z-10 min-h-screen flex flex-col">
         <Navigation />
         <main className="w-full fade-in-up flex-grow">
           {activeTab === 'home' && <HomePage />}
           {activeTab === 'favorites' && <FavoritesPage />}
           {activeTab === 'portfolio' && <PortfolioPage />}
+          {activeTab === 'alerts' && <AlertsPage cryptoData={cryptoData} />}
           {activeTab === 'charts' && <ChartsPage />}
+          {activeTab === 'stats' && <StatsPage cryptoData={cryptoData} formatCurrency={formatCurrency} />}
+
           {activeTab === 'convert' && <ConvertPage />}
           {activeTab === 'news' && <NewsPage />}
         </main>
@@ -837,4 +1013,10 @@ const CryptoTracker = () => {
   );
 };
 
-export default CryptoTracker;
+const App = () => (
+  <ThemeProvider>
+    <CryptoTracker />
+  </ThemeProvider>
+);
+
+export default App;
