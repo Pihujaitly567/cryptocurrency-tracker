@@ -421,7 +421,7 @@ const CryptoTracker = () => {
     return (
       <button
         onClick={toggleTheme}
-        className="p-3 rounded-full bg-slate-800/80 hover:bg-slate-700 text-yellow-400 transition-all border border-slate-700 hover:scale-110"
+        className="btn-secondary p-3"
         title={theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
       >
         {theme === 'dark' ? <Sun size={20} /> : <Moon size={20} />}
@@ -429,153 +429,196 @@ const CryptoTracker = () => {
     );
   };
 
-  // yha se ui start
+  // Clean Navigation Component - Matching Image Design
   const Navigation = () => (
-    <nav className="nav-glass text-white shadow-xl p-6 md:p-8 sticky top-0 z-20 w-full mb-10">
-      <div className="w-full px-4 sm:px-8">
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-8">
-          <div className="flex items-center gap-6">
-            <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full overflow-hidden shadow-lg hover:shadow-blue-500/50 hover:scale-110 transition-all duration-300 cursor-pointer border-2 border-blue-500/30 hover:border-blue-400 float-animation">
+    <nav className="nav-glass text-white sticky top-0 z-50 w-full">
+      <div className="w-full max-w-[1920px] mx-auto px-6 sm:px-8 lg:px-10 xl:px-16 py-8">
+        <div className="w-full flex items-center justify-between gap-12">
+          {/* Left: Logo and Brand */}
+          <div className="flex items-center gap-4 min-w-0 flex-shrink-0">
+            <div className="w-14 h-14 rounded-full overflow-hidden flex-shrink-0 border-2 border-blue-500/30">
               <img
                 src="/logo.jpg"
                 alt="CripTik Logo"
-                className="w-full h-full object-cover scale-[1.4]"
+                className="w-full h-full object-cover"
               />
             </div>
-            <div>
-              <h1 className="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-blue-400 via-purple-400 to-cyan-400 bg-clip-text text-transparent">CripTik</h1>
-              <p className="text-sm text-gray-400 hidden sm:block mt-1">Real-time Crypto Tracker</p>
+            <div className="min-w-0">
+              <h1 className="text-xl font-semibold text-blue-400 truncate">CripTik</h1>
+              <p className="text-sm text-gray-400 hidden sm:block">Real-time Crypto Tracker</p>
             </div>
           </div>
-          <div className="flex items-center gap-6">
-            {user && (
-              <div className="hidden sm:flex items-center gap-2 bg-slate-800/50 px-4 py-2 rounded-full border border-slate-700/50">
-                <span className="text-gray-400 text-sm">Welcome,</span>
-                <span className="text-white font-semibold">{user.name}</span>
-              </div>
-            )}
-            <button
-              onClick={() => setCurrency(prev => prev === 'usd' ? 'inr' : 'usd')}
-              className="flex items-center gap-2 bg-slate-800/80 hover:bg-slate-700 text-white px-4 py-2 rounded-full border border-slate-700 transition-all"
-              title="Toggle Currency"
-            >
-              <span className={`font-bold ${currency === 'usd' ? 'text-blue-400' : 'text-gray-500'}`}>$</span>
-              <span className="text-gray-600">/</span>
-              <span className={`font-bold ${currency === 'inr' ? 'text-blue-400' : 'text-gray-500'}`}>₹</span>
-            </button>
-            <ThemeToggle />
 
-            <div className="flex items-center gap-2 text-sm text-gray-400 bg-slate-800/50 px-4 py-2 rounded-full border border-slate-700/50">
-              <span className="live-indicator"></span>
-              <span className="hidden sm:inline">Live Updates</span>
+          {/* Center: Navigation Links */}
+          <div className="hidden md:flex items-center gap-3 flex-1 justify-center">
+            {[
+              { id: 'home', label: 'Home', icon: Home },
+              { id: 'favorites', label: 'Favorites', icon: Star },
+              { id: 'portfolio', label: 'Portfolio', icon: Briefcase },
+              { id: 'stats', label: 'Stats', icon: Activity },
+              { id: 'news', label: 'News', icon: Newspaper }
+            ].map(({ id, label, icon: Icon }) => (
+              <button
+                key={id}
+                onClick={() => setActiveTab(id)}
+                className={`tab-btn flex items-center gap-2.5 px-6 py-3 text-base whitespace-nowrap ${
+                  activeTab === id ? 'active' : ''
+                }`}
+              >
+                <Icon size={20} />
+                <span>{label}</span>
+              </button>
+            ))}
+          </div>
+
+
+          {/* Right: Controls */}
+          <div className="flex items-center gap-5 flex-shrink-0">
+            {/* Search Icon */}
+            <button className="p-3 text-gray-400 hover:text-white transition-colors" title="Search">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <circle cx="11" cy="11" r="8"></circle>
+                <path d="m21 21-4.35-4.35"></path>
+              </svg>
+            </button>
+
+            {/* Bell Icon */}
+            <button className="p-3 text-gray-400 hover:text-white transition-colors" title="Notifications">
+              <Bell size={20} />
+            </button>
+
+            {/* Theme Toggle with Coin Count */}
+            <div className="flex items-center gap-3">
+              <ThemeToggle />
+              <span className="text-sm text-gray-400 hidden lg:inline">{cryptoData.length} coins</span>
             </div>
+
+            {/* Refresh Button */}
             <button
               onClick={fetchCryptoData}
-              className="btn-primary flex items-center gap-2 text-base px-6 py-3 font-semibold"
+              className="btn-primary flex items-center gap-2 px-6 py-3 text-base"
+              title="Refresh Data"
             >
-              <RefreshCw size={20} className={loading ? 'animate-spin' : ''} />
+              <RefreshCw size={18} className={loading ? 'animate-spin' : ''} />
               <span className="hidden sm:inline">Refresh</span>
-            </button>
-            <button
-              onClick={handleLogout}
-              className="bg-red-500/10 hover:bg-red-500/20 text-red-400 px-6 py-3 rounded-full border border-red-500/20 hover:border-red-500/40 transition-all font-semibold"
-              title="Logout"
-            >
-              <span className="hidden sm:inline">Logout</span>
-              <span className="sm:hidden">🚪</span>
             </button>
           </div>
         </div>
-      </div>
 
-      <div className="flex flex-wrap gap-4 sm:gap-6 overflow-x-auto pb-4 scrollbar-hide">
-        {[
-          { id: 'home', label: 'Home', icon: Home },
-          { id: 'favorites', label: 'Favorites', icon: Star },
-          { id: 'portfolio', label: 'Portfolio', icon: Briefcase },
-          { id: 'alerts', label: 'Alerts', icon: Bell },
-          { id: 'stats', label: 'Stats', icon: Activity },
-          { id: 'charts', label: 'Charts', icon: BarChart3 },
-
-          { id: 'convert', label: 'Convert', icon: ArrowUpDown },
-          { id: 'news', label: 'News', icon: Newspaper }
-        ].map(({ id, label, icon: Icon }) => (
+        {/* Bottom Row: Welcome and Logout */}
+        <div className="flex items-center justify-end gap-8 mt-6 pt-6 border-t border-divider">
+          {user && (
+            <span className="text-sm text-gray-400">Welcome, {user.name}</span>
+          )}
           <button
-            key={id}
-            onClick={() => setActiveTab(id)}
-            className={`tab-btn flex items-center gap-3 px-8 py-4 rounded-2xl text-lg font-bold transition-all whitespace-nowrap shadow-lg flex-1 sm:flex-none justify-center ${activeTab === id
-              ? 'active text-white scale-105 shadow-blue-500/20'
-              : 'bg-slate-800/40 hover:bg-slate-700/60 text-gray-400 hover:text-white border border-slate-700/30 hover:border-slate-600'
-              }`}
+            onClick={() => setCurrency(prev => prev === 'usd' ? 'inr' : 'usd')}
+            className="text-sm text-gray-400 hover:text-white transition-colors px-3 py-1.5"
+            title="Toggle Currency"
           >
-            <Icon size={24} />
-            <span className="">{label}</span>
+            {currency === 'usd' ? '$' : '₹'}
           </button>
-        ))}
+          <button
+            onClick={handleLogout}
+            className="text-sm text-gray-400 hover:text-red-400 transition-colors px-3 py-1.5"
+            title="Logout"
+          >
+            Logout
+          </button>
+        </div>
+
+        {/* Mobile Navigation - Show below on small screens */}
+        <div className="md:hidden w-full mt-3 pt-3 border-t border-divider">
+          <div className="flex items-center gap-1 overflow-x-auto scrollbar-hide">
+            {[
+              { id: 'home', label: 'Home', icon: Home },
+              { id: 'favorites', label: 'Favorites', icon: Star },
+              { id: 'portfolio', label: 'Portfolio', icon: Briefcase },
+              { id: 'stats', label: 'Stats', icon: Activity },
+              { id: 'news', label: 'News', icon: Newspaper }
+            ].map(({ id, label, icon: Icon }) => (
+              <button
+                key={id}
+                onClick={() => setActiveTab(id)}
+                className={`tab-btn flex items-center gap-1.5 px-3 py-2 text-xs whitespace-nowrap flex-shrink-0 ${
+                  activeTab === id ? 'active' : ''
+                }`}
+              >
+                <Icon size={16} />
+                <span>{label}</span>
+              </button>
+            ))}
+          </div>
+        </div>
       </div>
-    </nav >
+    </nav>
   );
 
   const FavoritesPage = () => {
     const favoriteCoins = cryptoData.filter(coin => favorites.includes(coin.id));
 
     return (
-      <div className="w-full px-4 sm:px-8 py-4">
+      <div className="w-full">
         {favoriteCoins.length === 0 ? (
-          <div className="mt-20 text-center">
-            <div className="w-24 h-24 bg-slate-800 rounded-full flex items-center justify-center mx-auto mb-6">
-              <Star size={48} className="text-gray-600" />
-            </div>
-            <h3 className="text-2xl font-bold text-white mb-2">No Favorites Yet</h3>
-            <p className="text-gray-400 text-lg">Star coins on the home page to add them here!</p>
+          <div className="glass-card p-12 text-center">
+            <Star size={48} className="text-gray-500 mx-auto mb-4" />
+            <h3 className="text-lg font-medium text-white mb-2">No coins in watchlist</h3>
+            <p className="text-sm text-gray-400 mb-6">Star coins on the home page to add them here</p>
             <button
               onClick={() => setActiveTab('home')}
-              className="mt-8 px-8 py-3 bg-blue-600 hover:bg-blue-500 text-white rounded-xl font-bold transition-all"
+              className="btn-primary"
             >
               Browse Coins
             </button>
           </div>
         ) : (
-          <div className="grid gap-6">
+          <div className="glass-card overflow-hidden">
+            <div className="hidden md:grid grid-cols-[60px_1fr_140px_120px_80px] gap-4 px-5 py-3 border-b border-divider bg-card">
+              <div className="text-xs font-medium text-gray-400 uppercase tracking-wider">#</div>
+              <div className="text-xs font-medium text-gray-400 uppercase tracking-wider">Coin</div>
+              <div className="text-xs font-medium text-gray-400 uppercase tracking-wider text-right">Price</div>
+              <div className="text-xs font-medium text-gray-400 uppercase tracking-wider text-right">24h</div>
+              <div className="text-xs font-medium text-gray-400 uppercase tracking-wider text-center">Watch</div>
+            </div>
             {favoriteCoins.map((crypto, index) => (
-              <div
-                key={crypto.id}
-                className="glass-card p-6"
-              >
-                <div className="flex flex-col sm:flex-row items-center justify-between gap-6">
-                  <div className="flex items-center gap-6 w-full sm:w-auto">
-                    <img
-                      src={crypto.image}
-                      alt={crypto.name}
-                      className="coin-img w-16 h-16"
-                    />
-                    <div className="min-w-0 flex-1">
-                      <h3 className="text-xl sm:text-2xl font-bold text-white group-hover:text-blue-400 transition-colors">{crypto.name}</h3>
-                      <div className="flex items-center gap-2 mt-1">
-                        <span className="px-2 py-0.5 rounded bg-slate-700/50 text-xs font-mono text-gray-300 uppercase">{crypto.symbol}</span>
+              <div key={crypto.id} className="coin-row">
+                <div className="flex flex-col md:grid md:grid-cols-[60px_1fr_140px_120px_80px] md:gap-4 items-start md:items-center gap-3">
+                  <div className="text-sm text-gray-400 font-medium hidden md:block">
+                    {crypto.market_cap_rank || index + 1}
+                  </div>
+                  <div className="flex items-center gap-3 min-w-0 flex-1">
+                    <img src={crypto.image} alt={crypto.name} className="w-8 h-8 rounded-full flex-shrink-0" />
+                    <div className="min-w-0">
+                      <div className="flex items-center gap-2">
+                        <h3 className="text-sm font-medium text-white truncate">{crypto.name}</h3>
+                        <span className="text-xs text-gray-400 uppercase">{crypto.symbol}</span>
+                      </div>
+                      <div className="text-xs text-gray-400 md:hidden mt-0.5">
+                        #{crypto.market_cap_rank || index + 1}
                       </div>
                     </div>
                   </div>
-
-                  <div className="flex items-center justify-between w-full sm:w-auto gap-8 ml-auto">
-                    <div className="text-right">
-                      <p className="text-2xl sm:text-3xl font-bold text-white tracking-tight">{formatCurrency(crypto.current_price)}</p>
-                      <div className="flex justify-end mt-1">
-                        <span className={`px-3 py-1 rounded-full text-sm font-semibold flex items-center gap-1 ${crypto.price_change_percentage_24h >= 0 ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' : 'bg-red-500/10 text-red-400 border border-red-500/20'}`}>
-                          {crypto.price_change_percentage_24h >= 0 ? <TrendingUp size={14} /> : <TrendingDown size={14} />}
-                          {Math.abs(crypto.price_change_percentage_24h).toFixed(2)}%
-                        </span>
-                      </div>
+                  <div className="text-right md:text-right">
+                    <div className="text-base font-medium text-white">
+                      {formatCurrency(crypto.current_price)}
                     </div>
-
+                    <div className="text-xs text-gray-400 md:hidden mt-0.5">Price</div>
+                  </div>
+                  <div className="text-right md:text-right">
+                    <div className={`text-base font-medium ${crypto.price_change_percentage_24h >= 0 ? 'price-up' : 'price-down'}`}>
+                      {crypto.price_change_percentage_24h >= 0 ? '+' : ''}{crypto.price_change_percentage_24h.toFixed(2)}%
+                    </div>
+                    <div className="text-xs text-gray-400 md:hidden mt-0.5">24h</div>
+                  </div>
+                  <div className="flex items-center justify-end md:justify-center">
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
                         toggleFavorite(crypto.id);
                       }}
-                      className="p-3 rounded-full bg-slate-800/50 hover:bg-slate-700 text-yellow-400 transition-all border border-slate-700 hover:scale-110"
+                      className="p-1.5 rounded transition-colors text-yellow-400"
+                      title="Remove from watchlist"
                     >
-                      <Star size={24} fill="currentColor" />
+                      <Star size={18} fill="currentColor" />
                     </button>
                   </div>
                 </div>
@@ -587,87 +630,114 @@ const CryptoTracker = () => {
     );
   };
 
-  // first page
+  // Clean table-like coin list - Matching Image Design
   const HomePage = () => (
-    <div className="w-full px-4 sm:px-8 py-4">
-      <div className="flex items-center justify-end mb-6">
-        <div className="flex items-center gap-2 text-sm text-gray-400 bg-slate-800/50 px-4 py-2 rounded-full border border-slate-700/50">
-          <span className="live-indicator"></span>
-          <span>{cryptoData.length} coins loaded</span>
-        </div>
-      </div>
-
+    <div className="w-full">
       {loading ? (
-        <div className="grid gap-6">
-          {[...Array(6)].map((_, i) => (
-            <SkeletonCard key={i} />
+        <div className="glass-card">
+          {[...Array(10)].map((_, i) => (
+            <div key={i} className="coin-row">
+              <div className="flex items-center gap-4">
+                <div className="skeleton w-8 h-8 rounded-full"></div>
+                <div className="skeleton h-4 w-32"></div>
+                <div className="ml-auto skeleton h-4 w-24"></div>
+                <div className="skeleton h-4 w-16"></div>
+              </div>
+            </div>
           ))}
         </div>
       ) : (
-        <div className="grid gap-6">
-          {cryptoData.slice(0, 20).map((crypto, index) => (
+        <div className="glass-card overflow-hidden">
+          {/* Table Header */}
+          <div className="hidden md:grid grid-cols-[70px_1fr_180px_150px_110px] gap-8 px-8 py-6 border-b border-divider bg-card">
+            <div className="text-base font-medium text-gray-400 uppercase tracking-wider">#</div>
+            <div className="text-base font-medium text-gray-400 uppercase tracking-wider">Coin</div>
+            <div className="text-base font-medium text-gray-400 uppercase tracking-wider text-right flex items-center justify-end gap-2">
+              Price
+              <svg width="12" height="12" viewBox="0 0 8 8" fill="currentColor" className="text-gray-500">
+                <path d="M4 0L2 3H6L4 0Z" />
+                <path d="M4 8L6 5H2L4 8Z" />
+              </svg>
+            </div>
+            <div className="text-base font-medium text-gray-400 uppercase tracking-wider text-right flex items-center justify-end gap-2">
+              24h %
+              <svg width="12" height="12" viewBox="0 0 8 8" fill="currentColor" className="text-gray-500">
+                <path d="M4 0L2 3H6L4 0Z" />
+                <path d="M4 8L6 5H2L4 8Z" />
+              </svg>
+            </div>
+            <div className="text-base font-medium text-gray-400 uppercase tracking-wider text-center">Actions</div>
+          </div>
+
+          {/* Coin Rows */}
+          {cryptoData.slice(0, 50).map((crypto, index) => (
             <div
               key={crypto.id}
-              className="glass-card p-6 group hover:translate-x-1 transition-transform"
-              style={{ animationDelay: `${index * 0.05}s` }}
+              className="coin-row"
             >
-              <div className="flex flex-col sm:flex-row items-center justify-between gap-6">
-                <div className="flex items-center gap-6 w-full sm:w-auto">
-                  <div className="relative">
-                    <img
-                      src={crypto.image}
-                      alt={crypto.name}
-                      className="coin-img w-16 h-16"
-                    />
-                    <span className="absolute -top-2 -left-2 bg-slate-700 text-xs text-gray-300 w-6 h-6 rounded-full flex items-center justify-center font-bold border border-slate-600 shadow-lg">
-                      {index + 1}
-                    </span>
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <h3 className="text-xl sm:text-2xl font-bold text-white truncate group-hover:text-blue-400 transition-colors">{crypto.name}</h3>
-                    <div className="flex items-center gap-2 mt-1">
-                      <span className="px-2 py-0.5 rounded bg-slate-700/50 text-xs font-mono text-gray-300 uppercase">{crypto.symbol}</span>
-                      <span className="text-gray-500 text-sm">Rank #{crypto.market_cap_rank}</span>
+              <div className="flex flex-col md:grid md:grid-cols-[70px_1fr_180px_150px_110px] md:gap-8 items-start md:items-center gap-5">
+                {/* Rank */}
+                <div className="text-sm text-gray-400 font-normal hidden md:block">
+                  {crypto.market_cap_rank || index + 1}
+                </div>
+
+                {/* Coin Info - Name above, Symbol below */}
+                <div className="flex items-center gap-5 min-w-0 flex-1">
+                  <img
+                    src={crypto.image}
+                    alt={crypto.name}
+                    className="w-14 h-14 rounded-full flex-shrink-0"
+                  />
+                  <div className="min-w-0">
+                    <h3 className="text-lg font-medium text-white truncate">{crypto.name}</h3>
+                    <div className="text-base text-gray-400 mt-1.5">
+                      {crypto.symbol.toUpperCase()}
+                      {crypto.market_cap_rank && ` #${crypto.market_cap_rank}`}
+                    </div>
+                    <div className="text-xs text-gray-400 md:hidden mt-0.5">
+                      #{crypto.market_cap_rank || index + 1}
                     </div>
                   </div>
                 </div>
 
-                <div className="flex items-center justify-between w-full sm:w-auto gap-8 ml-auto">
-                  <div className="text-right">
-                    <p className="text-2xl sm:text-3xl font-bold text-white tracking-tight">{formatCurrency(crypto.current_price)}</p>
-                    <div className="flex justify-end mt-1">
-                      <span className={`px-3 py-1 rounded-full text-sm font-semibold flex items-center gap-1 ${crypto.price_change_percentage_24h >= 0 ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' : 'bg-red-500/10 text-red-400 border border-red-500/20'}`}>
-                        {crypto.price_change_percentage_24h >= 0 ? <TrendingUp size={14} /> : <TrendingDown size={14} />}
-                        {Math.abs(crypto.price_change_percentage_24h).toFixed(2)}%
-                      </span>
-                    </div>
+                {/* Price */}
+                <div className="text-right md:text-right">
+                  <div className="text-xl font-medium text-white">
+                    {formatCurrency(crypto.current_price)}
                   </div>
+                  <div className="text-xs text-gray-400 md:hidden mt-0.5">Price</div>
+                </div>
 
-                  <div className="flex flex-col gap-2">
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        addToPortfolio(crypto, 1);
-                      }}
-                      className="btn-primary p-3 rounded-full hover:scale-110 transition-transform shadow-lg shadow-blue-500/20 group-hover:shadow-blue-500/40"
-                      title="Add to Portfolio"
-                    >
-                      <Plus size={24} />
-                    </button>
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        toggleFavorite(crypto.id);
-                      }}
-                      className={`p-3 rounded-full transition-all border hover:scale-110 ${favorites.includes(crypto.id)
-                        ? 'bg-slate-800/80 text-yellow-400 border-yellow-500/30'
-                        : 'bg-slate-800/50 text-gray-400 border-slate-700 hover:text-yellow-400 hover:border-yellow-500/50'
-                        }`}
-                      title={favorites.includes(crypto.id) ? "Remove from Favorites" : "Add to Favorites"}
-                    >
-                      <Star size={24} fill={favorites.includes(crypto.id) ? "currentColor" : "none"} />
-                    </button>
+                {/* 24h Change with Arrow */}
+                <div className="text-right md:text-right">
+                  <div className={`text-xl font-medium flex items-center justify-end gap-2 ${crypto.price_change_percentage_24h >= 0 ? 'price-up' : crypto.price_change_percentage_24h < 0 ? 'price-down' : 'text-gray-400'}`}>
+                    {crypto.price_change_percentage_24h > 0 && (
+                      <span className="text-green-500 text-lg">▲</span>
+                    )}
+                    {crypto.price_change_percentage_24h < 0 && (
+                      <span className="text-red-500 text-lg">▼</span>
+                    )}
+                    {crypto.price_change_percentage_24h >= 0 ? '' : ''}{Math.abs(crypto.price_change_percentage_24h).toFixed(2)}%
                   </div>
+                  <div className="text-xs text-gray-400 md:hidden mt-0.5">24h</div>
+                </div>
+
+                {/* Watchlist Button in Gray Box */}
+                <div className="flex items-center justify-end md:justify-center">
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      toggleFavorite(crypto.id);
+                    }}
+                    className={`w-12 h-12 flex items-center justify-center rounded transition-colors ${
+                      favorites.includes(crypto.id)
+                        ? 'bg-gray-700 text-yellow-400'
+                        : 'bg-gray-800 text-gray-400 hover:bg-gray-700 hover:text-yellow-400'
+                    }`}
+                    title={favorites.includes(crypto.id) ? "Remove from watchlist" : "Add to watchlist"}
+                  >
+                    <Star size={20} fill={favorites.includes(crypto.id) ? "currentColor" : "none"} />
+                  </button>
                 </div>
               </div>
             </div>
@@ -680,37 +750,44 @@ const CryptoTracker = () => {
 
   // second page 
   const PortfolioPage = () => (
-    <div className="w-full px-4 sm:px-8 py-4">
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8 mb-10">
-        <div className="stat-card p-8">
-          <h3 className="text-base font-medium text-gray-400 mb-3">Total Value</h3>
-          <p className="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-blue-400 to-cyan-400 bg-clip-text text-transparent">
+    <div className="w-full">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+        <div className="stat-card p-5">
+          <h3 className="text-xs font-medium text-gray-400 mb-2 uppercase tracking-wider">Total Value</h3>
+          <p className="text-2xl font-semibold text-white">
             {formatCurrency(portfolioValue)}
           </p>
         </div>
-        <div className="stat-card p-8">
-          <h3 className="text-base font-medium text-gray-400 mb-3">Profit/Loss</h3>
-          <p className={`text-3xl sm:text-4xl font-bold ${portfolioProfitLoss >= 0 ? 'text-emerald-400' : 'text-red-400'}`}>
+        <div className="stat-card p-5">
+          <h3 className="text-xs font-medium text-gray-400 mb-2 uppercase tracking-wider">Profit/Loss</h3>
+          <p className={`text-2xl font-semibold ${portfolioProfitLoss >= 0 ? 'price-up' : 'price-down'}`}>
             {portfolioProfitLoss >= 0 ? '+' : ''}{formatCurrency(portfolioProfitLoss)}
           </p>
         </div>
-        <div className="stat-card p-8">
-          <h3 className="text-base font-medium text-gray-400 mb-3">Holdings</h3>
-          <p className="text-3xl sm:text-4xl font-bold text-white">{portfolio.length} Assets</p>
+        <div className="stat-card p-5">
+          <h3 className="text-xs font-medium text-gray-400 mb-2 uppercase tracking-wider">Holdings</h3>
+          <p className="text-2xl font-semibold text-white">{portfolio.length} Assets</p>
         </div>
       </div>
 
       {portfolio.length === 0 ? (
-        <div className="glass-card text-center py-20 px-4">
-          <div className="text-7xl mb-6 bounce-animation">📊</div>
-          <h3 className="text-2xl font-bold text-white mb-3">Your portfolio is empty</h3>
-          <p className="text-gray-400 text-lg mb-8 max-w-md mx-auto">Start building your crypto wealth by adding coins from the Home page.</p>
-          <button onClick={() => setActiveTab('home')} className="btn-primary px-8 py-3 text-lg">
+        <div className="glass-card p-12 text-center">
+          <div className="text-4xl mb-4">📊</div>
+          <h3 className="text-lg font-medium text-white mb-2">Your portfolio is empty</h3>
+          <p className="text-sm text-gray-400 mb-6">Start building your crypto wealth by adding coins from the Home page</p>
+          <button onClick={() => setActiveTab('home')} className="btn-primary">
             Explore Coins
           </button>
         </div>
       ) : (
-        <div className="grid gap-6">
+        <div className="glass-card overflow-hidden">
+          <div className="hidden md:grid grid-cols-[1fr_120px_140px_140px_80px] gap-4 px-5 py-3 border-b border-divider bg-card">
+            <div className="text-xs font-medium text-gray-400 uppercase tracking-wider">Asset</div>
+            <div className="text-xs font-medium text-gray-400 uppercase tracking-wider text-right">Amount</div>
+            <div className="text-xs font-medium text-gray-400 uppercase tracking-wider text-right">Value</div>
+            <div className="text-xs font-medium text-gray-400 uppercase tracking-wider text-right">P/L</div>
+            <div className="text-xs font-medium text-gray-400 uppercase tracking-wider text-center">Action</div>
+          </div>
           {portfolio.map((item) => {
             const currentValue = item.current_price * item.amount;
             const purchaseValue = item.purchasePrice * item.amount;
@@ -718,28 +795,45 @@ const CryptoTracker = () => {
             const profitPercent = ((currentValue - purchaseValue) / purchaseValue) * 100;
 
             return (
-              <div key={item.id} className="glass-card p-6 sm:p-8 group hover:border-blue-500/30 transition-colors">
-                <div className="flex flex-col sm:flex-row items-center justify-between gap-6">
-                  <div className="flex items-center gap-6 w-full sm:w-auto">
-                    <img src={item.image} alt={item.name} className="coin-img w-16 h-16" />
-                    <div className="min-w-0 flex-1">
-                      <h3 className="text-xl sm:text-2xl font-bold text-white truncate group-hover:text-blue-400 transition-colors">{item.name}</h3>
-                      <p className="text-gray-400 font-medium">{item.amount} {item.symbol.toUpperCase()}</p>
+              <div key={item.id} className="coin-row">
+                <div className="flex flex-col md:grid md:grid-cols-[1fr_120px_140px_140px_80px] md:gap-4 items-start md:items-center gap-3">
+                  <div className="flex items-center gap-3 min-w-0 flex-1">
+                    <img src={item.image} alt={item.name} className="w-8 h-8 rounded-full flex-shrink-0" />
+                    <div className="min-w-0">
+                      <div className="flex items-center gap-2">
+                        <h3 className="text-sm font-medium text-white truncate">{item.name}</h3>
+                        <span className="text-xs text-gray-400 uppercase">{item.symbol}</span>
+                      </div>
                     </div>
                   </div>
-                  <div className="flex items-center justify-between w-full sm:w-auto gap-8 ml-auto">
-                    <div className="text-right">
-                      <p className="text-2xl sm:text-3xl font-bold text-white mb-1">{formatCurrency(currentValue)}</p>
-                      <span className={`px-3 py-1 rounded-full text-sm font-semibold inline-flex items-center gap-1 ${profitLoss >= 0 ? 'bg-emerald-500/10 text-emerald-400' : 'bg-red-500/10 text-red-400'}`}>
-                        {profitLoss >= 0 ? '+' : ''}{formatCurrency(profitLoss)} ({profitPercent.toFixed(1)}%)
-                      </span>
+                  <div className="text-right md:text-right">
+                    <div className="text-sm font-medium text-white">
+                      {item.amount} {item.symbol.toUpperCase()}
                     </div>
+                    <div className="text-xs text-gray-400 md:hidden mt-0.5">Amount</div>
+                  </div>
+                  <div className="text-right md:text-right">
+                    <div className="text-base font-medium text-white">
+                      {formatCurrency(currentValue)}
+                    </div>
+                    <div className="text-xs text-gray-400 md:hidden mt-0.5">Value</div>
+                  </div>
+                  <div className="text-right md:text-right">
+                    <div className={`text-base font-medium ${profitLoss >= 0 ? 'price-up' : 'price-down'}`}>
+                      {profitLoss >= 0 ? '+' : ''}{formatCurrency(profitLoss)}
+                    </div>
+                    <div className={`text-xs ${profitLoss >= 0 ? 'price-up' : 'price-down'}`}>
+                      ({profitPercent.toFixed(1)}%)
+                    </div>
+                    <div className="text-xs text-gray-400 md:hidden mt-0.5">P/L</div>
+                  </div>
+                  <div className="flex items-center justify-end md:justify-center">
                     <button
                       onClick={() => removeFromPortfolio(item.id)}
-                      className="bg-red-500/10 hover:bg-red-500/30 text-red-400 p-4 rounded-xl transition-all hover:scale-105"
+                      className="p-1.5 rounded transition-colors text-gray-400 hover:text-red-400"
                       title="Remove from portfolio"
                     >
-                      <Minus size={20} />
+                      <Minus size={18} />
                     </button>
                   </div>
                 </div>
@@ -753,12 +847,12 @@ const CryptoTracker = () => {
 
 
   const ChartsPage = () => (
-    <div className="w-full px-4 sm:px-8 py-4">
-      <div className="mb-8">
+    <div className="w-full">
+      <div className="mb-6">
         <select
           value={selectedCrypto}
           onChange={(e) => setSelectedCrypto(e.target.value)}
-          className="w-full sm:w-auto px-6 py-3 text-lg"
+          className="w-full sm:w-auto min-w-[250px] px-4 py-2.5 text-sm"
         >
           {cryptoData.slice(0, 20).map((crypto) => (
             <option key={crypto.id} value={crypto.id}>
@@ -767,8 +861,8 @@ const CryptoTracker = () => {
           ))}
         </select>
       </div>
-      <div className="chart-container p-6 sm:p-8">
-        <h3 className="text-xl sm:text-2xl font-bold text-white mb-6">7-Day Price History</h3>
+      <div className="chart-container p-6">
+        <h3 className="text-base font-medium text-white mb-6">7-Day Price History</h3>
         <div className="w-full" style={{ height: '450px' }}>
           <ResponsiveContainer width="100%" height="100%">
             <LineChart data={chartData} margin={{ top: 20, right: 30, left: 10, bottom: 10 }}>
@@ -826,19 +920,15 @@ const CryptoTracker = () => {
 
 
   const ConvertPage = () => (
-    <div className="w-full px-4 sm:px-8 py-4">
-      <div className="glass-card p-8 sm:p-12 max-w-3xl mx-auto relative overflow-hidden mt-20">
-        {/* Decorative background glow */}
-        <div className="absolute top-0 right-0 -mr-20 -mt-20 w-64 h-64 bg-blue-500/10 rounded-full blur-3xl pointer-events-none"></div>
-        <div className="absolute bottom-0 left-0 -ml-20 -mb-20 w-64 h-64 bg-purple-500/10 rounded-full blur-3xl pointer-events-none"></div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 sm:gap-10 mb-10 relative z-10">
+    <div className="w-full">
+      <div className="glass-card p-8 max-w-2xl mx-auto">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
           <div>
-            <label className="block text-sm font-semibold text-gray-400 mb-3 uppercase tracking-wider">From Currency</label>
+            <label className="block text-xs font-medium text-gray-400 mb-2 uppercase tracking-wider">From Currency</label>
             <select
               value={convertFrom}
               onChange={(e) => setConvertFrom(e.target.value)}
-              className="w-full text-lg py-3 px-4"
+              className="w-full text-sm py-2.5 px-4"
             >
               {cryptoData.slice(0, 20).map((crypto) => (
                 <option key={crypto.id} value={crypto.id}>
@@ -848,11 +938,11 @@ const CryptoTracker = () => {
             </select>
           </div>
           <div>
-            <label className="block text-sm font-semibold text-gray-400 mb-3 uppercase tracking-wider">To Currency</label>
+            <label className="block text-xs font-medium text-gray-400 mb-2 uppercase tracking-wider">To Currency</label>
             <select
               value={convertTo}
               onChange={(e) => setConvertTo(e.target.value)}
-              className="w-full text-lg py-3 px-4"
+              className="w-full text-sm py-2.5 px-4"
             >
               {cryptoData.slice(0, 20).map((crypto) => (
                 <option key={crypto.id} value={crypto.id}>
@@ -863,25 +953,25 @@ const CryptoTracker = () => {
           </div>
         </div>
 
-        <div className="mb-10 relative z-10">
-          <label className="block text-sm font-semibold text-gray-400 mb-3 uppercase tracking-wider">Amount to Convert</label>
+        <div className="mb-6">
+          <label className="block text-xs font-medium text-gray-400 mb-2 uppercase tracking-wider">Amount to Convert</label>
           <input
             type="number"
             value={convertAmount}
             onChange={(e) => setConvertAmount(parseFloat(e.target.value) || 0)}
-            className="w-full text-2xl py-4 px-6 font-bold"
+            className="w-full text-lg py-3 px-4 font-medium"
             placeholder="Enter amount"
           />
         </div>
 
-        <div className="text-center relative z-10">
-          <div className="bg-slate-800/40 rounded-2xl p-8 border border-slate-700/50 backdrop-blur-sm">
-            <p className="text-lg text-gray-400 mb-2">
-              <span className="font-semibold text-white">{convertAmount}</span> {cryptoData.find(c => c.id === convertFrom)?.symbol?.toUpperCase()} equals
+        <div className="text-center">
+          <div className="bg-card rounded-lg p-6 border border-subtle">
+            <p className="text-sm text-gray-400 mb-3">
+              <span className="font-medium text-white">{convertAmount}</span> {cryptoData.find(c => c.id === convertFrom)?.symbol?.toUpperCase()} equals
             </p>
-            <div className="text-3xl sm:text-5xl font-bold bg-gradient-to-r from-blue-400 via-purple-400 to-cyan-400 bg-clip-text text-transparent break-all py-2">
+            <div className="text-3xl font-semibold text-white break-all">
               {conversionResult.toFixed(6)}
-              <span className="text-2xl sm:text-3xl ml-2 text-white opacity-80">{cryptoData.find(c => c.id === convertTo)?.symbol?.toUpperCase()}</span>
+              <span className="text-xl ml-2 text-gray-400">{cryptoData.find(c => c.id === convertTo)?.symbol?.toUpperCase()}</span>
             </div>
           </div>
         </div>
@@ -891,15 +981,15 @@ const CryptoTracker = () => {
 
 
   const NewsPage = () => (
-    <div className="w-full px-4 sm:px-8 py-4">
-      <div className="flex justify-end mb-6">
+    <div className="w-full">
+      <div className="flex items-center justify-end mb-6">
         <button
           onClick={fetchNews}
           disabled={newsLoading}
-          className="btn-primary flex items-center gap-2 text-sm px-6 py-3"
+          className="btn-secondary flex items-center gap-2 text-sm px-3 py-1.5"
         >
-          <RefreshCw size={18} className={newsLoading ? 'animate-spin' : ''} />
-          {newsLoading ? 'Refreshing...' : 'Refresh News'}
+          <RefreshCw size={16} className={newsLoading ? 'animate-spin' : ''} />
+          <span className="hidden sm:inline">{newsLoading ? 'Refreshing...' : 'Refresh'}</span>
         </button>
       </div>
 
@@ -914,26 +1004,20 @@ const CryptoTracker = () => {
           ))}
         </div>
       ) : (
-        <div className="grid gap-6 sm:gap-8">
+        <div className="grid gap-4">
           {news.map((article, index) => (
             <div
               key={article.id}
-              className={`glass-card p-6 sm:p-8 group hover:border-blue-500/30 transition-all ${article.type === 'bullish' ? 'news-bullish' :
-                article.type === 'bearish' ? 'news-bearish' :
-                  article.type === 'trending' ? 'news-trending' :
-                    article.type === 'market' ? 'news-market' :
-                      ''
-                }`}
-              style={{ animationDelay: `${index * 0.1}s` }}
+              className="glass-card p-5 group"
             >
-              <div className="flex items-start justify-between gap-4 mb-4">
-                <h3 className="text-xl sm:text-2xl font-bold text-white flex-1 group-hover:text-blue-400 transition-colors leading-tight">
+              <div className="flex items-start justify-between gap-4 mb-3">
+                <h3 className="text-base font-medium text-white flex-1 leading-tight">
                   {article.title}
                 </h3>
-                {article.type === 'bullish' && <TrendingUp className="text-emerald-400 flex-shrink-0 float-animation" size={28} />}
-                {article.type === 'bearish' && <TrendingDown className="text-red-400 flex-shrink-0" size={28} />}
+                {article.type === 'bullish' && <TrendingUp className="text-green-500 flex-shrink-0" size={20} />}
+                {article.type === 'bearish' && <TrendingDown className="text-red-500 flex-shrink-0" size={20} />}
               </div>
-              <p className="text-gray-400 mb-6 text-base sm:text-lg leading-relaxed">{article.description}</p>
+              <p className="text-sm text-gray-400 mb-4 leading-relaxed">{article.description}</p>
               <div className="flex flex-wrap items-center gap-3 sm:gap-4 text-sm">
                 <span className="text-gray-500 flex items-center gap-1.5 bg-slate-800/50 px-3 py-1.5 rounded-full border border-slate-700/50">
                   <span className="live-indicator"></span>
@@ -996,16 +1080,17 @@ const CryptoTracker = () => {
     <div className="min-h-screen gradient-bg w-full relative transition-colors duration-300">
       <div className="relative z-10 min-h-screen flex flex-col">
         <Navigation />
-        <main className="w-full fade-in-up flex-grow">
-          {activeTab === 'home' && <HomePage />}
-          {activeTab === 'favorites' && <FavoritesPage />}
-          {activeTab === 'portfolio' && <PortfolioPage />}
-          {activeTab === 'alerts' && <AlertsPage cryptoData={cryptoData} />}
-          {activeTab === 'charts' && <ChartsPage />}
-          {activeTab === 'stats' && <StatsPage cryptoData={cryptoData} formatCurrency={formatCurrency} />}
-
-          {activeTab === 'convert' && <ConvertPage />}
-          {activeTab === 'news' && <NewsPage />}
+        <main className="w-full fade-in-up flex-grow py-12">
+          <div className="w-full max-w-[1920px] mx-auto px-8 sm:px-10 lg:px-12 xl:px-20 my-10">
+            {activeTab === 'home' && <HomePage />}
+            {activeTab === 'favorites' && <FavoritesPage />}
+            {activeTab === 'portfolio' && <PortfolioPage />}
+            {activeTab === 'alerts' && <AlertsPage cryptoData={cryptoData} />}
+            {activeTab === 'charts' && <ChartsPage />}
+            {activeTab === 'stats' && <StatsPage cryptoData={cryptoData} formatCurrency={formatCurrency} />}
+            {activeTab === 'convert' && <ConvertPage />}
+            {activeTab === 'news' && <NewsPage />}
+          </div>
         </main>
         <Footer />
       </div>

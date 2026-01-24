@@ -6,7 +6,7 @@ const Footer = () => {
 
   return (
     <footer className="footer-gradient text-white py-12 mt-auto border-t border-slate-800/50">
-      <div className="w-full px-4 sm:px-8">
+      <div className="w-full max-w-[1920px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-12">
         <div className="flex flex-col items-center justify-center gap-8 text-center">
 
           {/* Personal Branding */}

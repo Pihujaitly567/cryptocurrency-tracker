@@ -5,56 +5,52 @@
    Clean, Modern, Solid Colors
    ======================================== */
 
-/* CSS Variables for consistent theming */
+/* CSS Variables for consistent theming - Clean Flat Dark Theme */
 :root {
-  /* Dark Mode (Default) */
-  --primary: #3b82f6;
-  --primary-dark: #2563eb;
-  --primary-light: #60a5fa;
-  --secondary: #8b5cf6;
-  --accent: #06b6d4;
-  --success: #10b981;
-  --danger: #ef4444;
-  --warning: #f59e0b;
+  /* Dark Mode (Default) - Flat Colors */
+  --primary: #1652f0;
+  --primary-dark: #0d47d1;
+  --primary-hover: #1e62ff;
+  --success: #16a34a;
+  --danger: #dc2626;
+  
+  --bg-dark: #0a0e27;
+  --bg-card: #131829;
+  --bg-card-hover: #1a1f35;
+  --bg-row-hover: #1a1f35;
 
-  --bg-dark: #0f172a;
-  --bg-card: #1e293b;
-  --bg-card-hover: #334155;
+  --text-primary: #ffffff;
+  --text-secondary: #9ca3af;
+  --text-muted: #6b7280;
 
-  --text-primary: #f8fafc;
-  --text-secondary: #94a3b8;
-  --text-muted: #64748b;
+  --border-subtle: rgba(255, 255, 255, 0.05);
+  --border-divider: rgba(255, 255, 255, 0.08);
 
-  --border-subtle: rgba(148, 163, 184, 0.1);
-  --border-accent: rgba(59, 130, 246, 0.3);
-
-  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
-  --shadow-card: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -2px rgba(0, 0, 0, 0.2);
-  --shadow-card-hover: 0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 8px 10px -6px rgba(0, 0, 0, 0.2);
-  --shadow-glow: 0 0 20px rgba(59, 130, 246, 0.2);
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.4);
+  --shadow-card: 0 1px 3px 0 rgba(0, 0, 0, 0.5);
 }
 
 [data-theme='light'] {
-  --primary: #2563eb;
-  --primary-dark: #1d4ed8;
-  --primary-light: #60a5fa;
-  --secondary: #7c3aed;
+  --primary: #1652f0;
+  --primary-dark: #0d47d1;
+  --primary-hover: #1e62ff;
+  --success: #16a34a;
+  --danger: #dc2626;
 
-  --bg-dark: #f8fafc;
-  --bg-card: #ffffff;
-  --bg-card-hover: #f1f5f9;
+  --bg-dark: #ffffff;
+  --bg-card: #f8f9fa;
+  --bg-card-hover: #f1f3f5;
+  --bg-row-hover: #f1f3f5;
 
-  --text-primary: #0f172a;
-  --text-secondary: #475569;
-  --text-muted: #94a3b8;
+  --text-primary: #111827;
+  --text-secondary: #6b7280;
+  --text-muted: #9ca3af;
 
-  --border-subtle: rgba(148, 163, 184, 0.2);
-  --border-accent: rgba(59, 130, 246, 0.5);
+  --border-subtle: rgba(0, 0, 0, 0.05);
+  --border-divider: rgba(0, 0, 0, 0.1);
 
   --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-  --shadow-card: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
-  --shadow-card-hover: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
-  --shadow-glow: 0 0 15px rgba(59, 130, 246, 0.15);
+  --shadow-card: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
 }
 
 
@@ -70,143 +66,138 @@ html {
 }
 
 body {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   background: var(--bg-dark);
   color: var(--text-primary);
   min-height: 100vh;
+  font-weight: 400;
 }
 
-/* Simple solid background - no gradients */
-/* Main background with selected image */
+/* Clean flat background - no gradients or images */
 .gradient-bg {
   background-color: var(--bg-dark);
-  background-image: url('/main-bg.png');
-  background-size: cover;
-  background-position: center;
-  background-attachment: fixed;
-  /* Parallax effect */
   position: relative;
   min-height: 100vh;
 }
 
-/* Dark overlay for readability */
-.gradient-bg::before {
-  content: '';
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(15, 23, 42, 0.7);
-  /* adjustable opacity */
-  pointer-events: none;
-  z-index: 0;
-}
-
-/* Glassmorphism card styles - solid with transparency */
+/* Clean flat card styles */
 .glass-card {
   background: var(--bg-card);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
   border: 1px solid var(--border-subtle);
-  border-radius: 16px;
-  box-shadow: var(--shadow-card);
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  border-radius: 8px;
+  transition: background-color 0.15s ease;
 }
 
 .glass-card:hover {
   background: var(--bg-card-hover);
-  border-color: var(--border-accent);
-  box-shadow: var(--shadow-card-hover);
-  transform: translateY(-4px);
 }
 
-/* Navigation solid effect */
+/* Table row style for coin list */
+.coin-row {
+  background: var(--bg-card);
+  border-bottom: 1px solid var(--border-divider);
+  transition: background-color 0.15s ease;
+  padding: 24px 32px;
+}
+
+.coin-row:hover {
+  background: var(--bg-row-hover);
+}
+
+.coin-row:last-child {
+  border-bottom: none;
+}
+
+.border-divider {
+  border-color: var(--border-divider);
+}
+
+.bg-card {
+  background: var(--bg-card);
+}
+
+/* Clean navigation */
 .nav-glass {
-  background: rgba(15, 23, 42, 0.95);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border-bottom: 1px solid var(--border-subtle);
+  background: var(--bg-card);
+  border-bottom: 1px solid var(--border-divider);
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.5);
 }
 
-/* Button styles - solid colors */
+/* Clean button styles */
 .btn-primary {
   background: var(--primary);
   color: white;
   border: none;
-  padding: 0.625rem 1.25rem;
-  border-radius: 9999px;
+  padding: 8px 16px;
+  border-radius: 6px;
   font-weight: 500;
+  font-size: 14px;
   cursor: pointer;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 14px rgba(59, 130, 246, 0.3);
+  transition: background-color 0.15s ease;
 }
 
 .btn-primary:hover {
-  background: var(--primary-dark);
-  transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
+  background: var(--primary-hover);
 }
 
 .btn-primary:active {
-  transform: translateY(0);
+  background: var(--primary-dark);
 }
 
-/* Tab button styles - solid */
+/* Secondary button */
+.btn-secondary {
+  background: transparent;
+  color: var(--text-secondary);
+  border: 1px solid var(--border-divider);
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-weight: 500;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.btn-secondary:hover {
+  background: var(--bg-card-hover);
+  color: var(--text-primary);
+  border-color: var(--border-subtle);
+}
+
+/* Clean tab button styles */
 .tab-btn {
-  position: relative;
-  overflow: hidden;
-  transition: all 0.3s ease;
+  background: transparent;
+  color: var(--text-secondary);
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-weight: 500;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.15s ease;
 }
 
-.tab-btn::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: rgba(255, 255, 255, 0.1);
-  transition: left 0.5s ease;
-}
-
-.tab-btn:hover::before {
-  left: 100%;
+.tab-btn:hover {
+  background: var(--bg-card-hover);
+  color: var(--text-primary);
 }
 
 .tab-btn.active {
-  background: var(--primary);
-  box-shadow: 0 4px 14px rgba(59, 130, 246, 0.3);
+  background: var(--bg-card-hover);
+  color: var(--text-primary);
+  font-weight: 600;
 }
 
-/* Price change badges - solid backgrounds */
+/* Clean price change indicators */
 .price-up {
-  background: rgba(16, 185, 129, 0.15);
-  color: #34d399;
-  border: 1px solid rgba(16, 185, 129, 0.3);
-  padding: 0.25rem 0.75rem;
-  border-radius: 9999px;
-  font-weight: 600;
-  font-size: 0.875rem;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.25rem;
+  color: var(--success);
+  font-weight: 500;
 }
 
 .price-down {
-  background: rgba(239, 68, 68, 0.15);
-  color: #f87171;
-  border: 1px solid rgba(239, 68, 68, 0.3);
-  padding: 0.25rem 0.75rem;
-  border-radius: 9999px;
-  font-weight: 600;
-  font-size: 0.875rem;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.25rem;
+  color: var(--danger);
+  font-weight: 500;
 }
 
 /* Skeleton loading animation - solid shimmer */
@@ -266,34 +257,23 @@ body {
   transform: scale(1.1) rotate(5deg);
 }
 
-/* Stats cards - solid background */
+/* Stats cards - clean flat design */
 .stat-card {
   background: var(--bg-card);
   border: 1px solid var(--border-subtle);
-  border-radius: 16px;
-  padding: 1.5rem;
-  position: relative;
-  overflow: hidden;
-  box-shadow: var(--shadow-card);
+  border-radius: 8px;
+  transition: background-color 0.15s ease;
 }
 
-.stat-card::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 3px;
-  background: var(--primary);
+.stat-card:hover {
+  background: var(--bg-card-hover);
 }
 
 /* Chart container */
 .chart-container {
   background: var(--bg-card);
-  border-radius: 16px;
-  padding: 1.5rem;
+  border-radius: 8px;
   border: 1px solid var(--border-subtle);
-  box-shadow: var(--shadow-card);
 }
 
 /* Custom scrollbar */
@@ -399,40 +379,36 @@ input,
 select {
   background: rgba(30, 41, 59, 0.8);
   border: 1px solid var(--border-subtle);
-  border-radius: 12px;
+  border-radius: 8px;
   padding: 0.75rem 1rem;
   color: var(--text-primary);
   font-family: inherit;
-  transition: all 0.3s ease;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  font-size: 0.9375rem;
 }
 
 input:focus,
 select:focus {
   outline: none;
   border-color: var(--primary);
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+  background: rgba(30, 41, 59, 0.95);
 }
 
 input::placeholder {
   color: var(--text-muted);
 }
 
-/* News card types - solid accent borders */
-.news-bullish {
-  border-left: 4px solid var(--success);
+input:hover,
+select:hover {
+  border-color: var(--border-divider);
 }
 
-.news-bearish {
-  border-left: 4px solid var(--danger);
+.border-subtle {
+  border-color: var(--border-subtle);
 }
 
-.news-trending {
-  border-left: 4px solid var(--warning);
-}
-
-.news-market {
-  border-left: 4px solid var(--primary);
-}
+/* News cards use standard glass-card styling */
 
 /* Hide scrollbar for elements with scrollbar-hide class */
 .scrollbar-hide {
@@ -444,14 +420,67 @@ input::placeholder {
   display: none;
 }
 
+/* Smooth transitions for all interactive elements */
+button,
+a,
+input,
+select {
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Better focus states */
+button:focus-visible,
+a:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
+/* Improved spacing utilities */
+.max-w-7xl {
+  max-width: 80rem;
+}
+
 /* Responsive adjustments */
 @media (max-width: 640px) {
   .glass-card {
-    border-radius: 12px;
+    border-radius: 10px;
+    padding: 1rem;
   }
 
   .stat-card {
-    padding: 1rem;
+    padding: 1.25rem;
+  }
+
+  .nav-glass {
+    padding: 0.75rem 0;
+  }
+}
+
+/* Clean typography */
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+/* Improved button hover states */
+button:not(:disabled):hover {
+  cursor: pointer;
+}
+
+button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Large screen optimizations */
+@media (min-width: 1536px) {
+  /* Better use of space on very large screens */
+  .glass-card {
+    padding: 1.5rem 2rem;
+  }
+  
+  .stat-card {
+    padding: 2rem;
   }
 }
 
