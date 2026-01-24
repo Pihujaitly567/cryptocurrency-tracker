@@ -22,7 +22,7 @@ const Footer = () => {
               <h3 className="text-2xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
                 CripTik
               </h3>
-              <p className="text-gray-400 font-medium mt-2">Designed & Built by <span className="text-white">Pihu Jaitly</span></p>
+              <p className="text-gray-400 font-medium mt-3">Designed & Built by <span className="text-white">Pihu Jaitly</span></p>
             </div>
           </div>
 
